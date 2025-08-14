@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Avaliação de Português - Múltipla Escolha</title>
+<style>
+/* ==============================
+   ÁREA DE CSS PARA O ALUNO
+   - Aqui você pode personalizar cores, fontes e espaçamento.
+   - Não altere o id e a classe dos elementos, apenas estilos.
+================================= */
+
+body {
+  font-family: Arial, sans-serif;
+  max-width: 900px;
+  margin: 20px auto;
+  background-color: #f9f9f9;
+}
+
+h1 {
+  text-align: center;
+  color: #2d3e50;
+}
+
+.pergunta {
+  border: 1px solid #ccc;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  background-color: #fff;
+}
+
+.alternativa {
+  margin-left: 20px;
+  margin-top: 8px;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+#infoAluno {
+  text-align: center;
+  font-size: 18px;
+  margin-bottom: 30px;
+  font-weight: bold;
+}
+
+</style>
+</head>
+<body>
+
+<h1>Avaliação de Português - Múltipla Escolha</h1>
+
+<!-- Nome do aluno e número de chamada -->
+<div id="infoAluno">
+  Nome do Aluno: Maria Oliveira | Número de Chamada: 67890
+</div>
+
+<!-- Container onde as perguntas e alternativas serão inseridas -->
+<div id="avaliacao"></div>
+
+<!-- Botão para enviar a avaliação -->
+<button onclick="enviarAvaliacao()">Enviar</button>
+
+<script>
+// ==============================
+// LISTA DE PERGUNTAS E ALTERNATIVAS
+// Estrutura: cada pergunta é um objeto com:
+// - texto: enunciado da pergunta
+// - alternativas: array de objetos { texto: "Resposta", correta: true/false }
+// ==============================
+const perguntas = [
+  {
+    texto: "Qual é a forma correta do plural da palavra 'lápis'?",
+    alternativas: [
+      { texto: "lápis", correta: true },
+      { texto: "lápises", correta: false },
+      { texto: "lapis", correta: false },
+      { texto: "lápises", correta: false }
+    ]
+  },
+  {
+    texto: "Qual destas palavras está corretamente acentuada?",
+    alternativas: [
+      { texto: "cafe", correta: false },
+      { texto: "lágrima", correta: true },
+      { texto: "manha", correta: false },
+      { texto: "caixote", correta: false }
+    ]
+  },
+  {
+    texto: "Como se chama a forma verbal 'corri'?",
+    alternativas: [
+      { texto: "Verbo no presente", correta: false },
+      { texto: "Verbo no pretérito perfeito", correta: true },
+      { texto: "Verbo no futuro do pretérito", correta: false },
+      { texto: "Verbo no futuro do presente", correta: false }
+    ]
+  },
+  {
+    texto: "Qual a frase correta?",
+    alternativas: [
+      { texto: "Ela viu as criança.", correta: false },
+      { texto: "Ela viu as crianças.", correta: true },
+      { texto: "Ela viu as criânças.", correta: false },
+      { texto: "Ela viu a crianças.", correta: false }
+    ]
+  },
+  {
+    texto: "Qual é a forma correta de se escrever a palavra?",
+    alternativas: [
+      { texto: "exceção", correta: true },
+      { texto: "exceção", correta: false },
+      { texto: "exceção", correta: false },
+      { texto: "exceção", correta: false }
+    ]
+  }
+];
+
+// ==============================
+// FUNÇÃO: mostraPergunta
+// - Recebe o índice da pergunta
+// - Cria e insere o enunciado no DOM
+// ==============================
+function mostraPergunta(indice) {
+  const pergunta = perguntas[indice]; // pega a pergunta pelo índice
+  const divPergunta = document.createElement("div");
+  divPergunta.className = "pergunta";
+  divPergunta.innerHTML = `<p><strong>${indice + 1}.</strong> ${pergunta.texto}</p>`;
+
+  // Chama a função que cria as alternativas
+  mostraAlternativas(divPergunta, indice);
+
+  // Adiciona a pergunta ao container
+  document.getElementById("avaliacao").appendChild(divPergunta);
+}
+
+// ==============================
+// FUNÇÃO: mostraAlternativas
+// - Recebe o elemento da pergunta e o índice
+// - Cria inputs tipo "radio" para cada alternativa
+// ==============================
+function mostraAlternativas(containerPergunta, indicePergunta) {
+  const alternativas = perguntas[indicePergunta].alternativas;
+
+  alternativas.forEach((alt, i) => {
+    const idAlternativa = `p${indicePergunta}_a${i}`;
+
+    // Cria o HTML da alternativa
+    const divAlt = document.createElement("div");
+    divAlt.className = "alternativa";
+    divAlt.innerHTML = `
+      <label>
+        <input type="radio" name="pergunta${indicePergunta}" value="${alt.texto}" id="${idAlternativa}">
+        ${alt.texto}
+      </label>
+    `;
+
+    // Adiciona a alternativa no container da pergunta
+    containerPergunta.appendChild(divAlt);
+  });
+}
+
+// ==============================
+// FUNÇÃO: enviarAvaliacao
+// - Coleta as respostas marcadas e exibe um alerta
+// - O aluno pode personalizar a mensagem ou fazer a correção
+// ==============================
+function enviarAvaliacao() {
+  let respostas = [];
+  let pontuacao = 0;
+
+  perguntas.forEach((pergunta, indice) => {
+    const selecionada = document.querySelector(`input[name="pergunta${indice}"]:checked`);
+    if (selecionada) {
+      respostas.push(selecionada.value);
+
+      // Verifica se a resposta está correta
+      const alternativaCorreta = pergunta.alternativas.find(alt => alt.correta);
+      if (selecionada.value === alternativaCorreta.texto) {
+        pontuacao++;
+      }
+    } else {
+      respostas.push("(sem resposta)");
+    }
+  });
+
+  // Exibe a pontuação final
+  alert(`Avaliação enviada!\nSuas respostas: \n${respostas.join("\n")}\n\nPontuação: ${pontuacao} de ${perguntas.length}`);
+}
+
+// ==============================
+// INICIALIZAÇÃO
+// - Chama mostraPergunta() para cada pergunta do array
+// ==============================
+perguntas.forEach((_, indice) => {
+  mostraPergunta(indice);
+});
+
+</script>
+</body>
+</html>
